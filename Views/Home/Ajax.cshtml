@@ -1,0 +1,141 @@
+﻿@model AgeCalculator.Models.DatumRodjenja
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css"
+          rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <title>Ajax</title>
+    <script>
+        $('document').ready(function () {
+            $('#btn1').click(function () {
+                $('.ajax-result').fadeIn('fast');
+                $('.ajax-result').show();
+                $('#btn1').animate({
+                    opacity: 0
+                });
+                $('#btn2').animate({
+                    opacity: 1
+                })
+                $('.form-group').animate({
+                    opacity: 0
+                });
+            });
+
+            $('#btn2').click(function () {
+                $('.ajax-result').fadeOut(1000);
+                $('#btn1').animate({
+                    opacity: 1
+                });
+                $('#btn2').animate({
+                    opacity: 0
+                });
+                $('.form-group').animate({
+                    opacity: 1
+                });
+            });
+
+            $('.ajax-form').submit(function (e) {
+                e.preventDefault();
+
+                var input = new Date($('#Datum').val());
+                var sekunda = input.getSeconds();
+                var minuta = input.getMinutes();
+                var sat = input.getHours();
+                var dan = input.getDate();
+                var mjesec = input.getMonth() + 1;
+                var godina = input.getFullYear();
+                var datum = dan + "/" + mjesec + "/" + godina;
+
+                var danas = new Date();
+                var danasSek = danas.getSeconds();
+                var danasMin = danas.getMinutes();
+                var danasSat = danas.getHours();
+                var danasDan = danas.getDate();
+                var danasMj = danas.getMonth() + 1;
+                var danasGod = danas.getFullYear();
+
+                var razlikaMj = ((danasGod - godina) * 12) + (danasMj - mjesec);
+                var razlikaDan = (razlikaMj * 30) + (danasDan - dan);
+                var razlikaSat = (razlikaDan * 24) + (danasSat - sat);
+                var razlikaMin = (razlikaSat * 60) + (danasMin - minuta);
+                var razlikaSek = (razlikaMin * 60) + (danasSek - sekunda);
+
+                var ajaxResult = $('.ajax-result');
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/Ajax",
+                    data: { datum: datum.valueOf() },
+                    success: function (data) {
+
+                        if (razlikaSek < 0) {
+                            ajaxResult.addClass('alert alert-success').empty().html('<p>Datum ne moze biti veci od danasnjeg datuma</p>');
+                            console.log("data: ", data);
+                        }
+                        else {
+                            ajaxResult.addClass('alert alert-success').empty().html('<p>Od Vaseg rodenja do danas proslo je :</p><p> U mjesecima: ' + razlikaMj + ' mjeseci</p><p> U danima: ' + razlikaDan + ' dana</p><p> U satima: ' + razlikaSat + ' sati</p><p> U minutama: ' + razlikaMin + ' minuta</p><p> U sekundama: ' + razlikaSek + ' sekundi</p> ');
+                            console.log("data: ", data);
+                        }
+
+                    }
+                },
+                );
+            });
+        });
+    </script>
+    <style>
+        #btn1 {
+            height: 30px;
+            width: 80px;
+            margin: 10px;
+            padding: 5px;
+            background-color: dodgerblue;
+            color: white;
+            border-color: burlywood;
+            position: relative;
+        }
+
+        #btn2 {
+            height: 30px;
+            width: 80px;
+            margin: 10px;
+            margin-top: 60px;
+            padding: 5px;
+            background-color: dodgerblue;
+            color: white;
+            border-color: burlywood;
+            position: relative;
+            opacity: 0;
+        }
+
+        .ajax-result {
+            position: relative;
+            width: auto;
+            border: 1px black solid;
+            border-radius: 6px;
+            margin-left: 30%;
+            margin-right: 30%;
+            display:none;
+        }
+    </style>
+</head>
+<body>
+    @using (Html.BeginForm("Ajax", "Home", FormMethod.Post, new { @class = "ajax-form" }))
+    {
+        <div class="form-group">
+            <p>Unesite svoj datum rodjenja: </p>
+            @Html.EditorFor(x => x.Datum)
+        </div>
+        <button type="submit" id="btn1">Izracunaj</button>
+    }
+    <div class="ajax-result"></div>
+    <button type="button" id="btn2">Zelim opet</button>
+</body>
+</html>

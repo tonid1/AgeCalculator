@@ -1,0 +1,51 @@
+﻿@model AgeCalculator.Models.DatumRodjenja
+
+@{ 
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css"
+          rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <style>
+        .btn1 {
+            padding-left: 0.5cm;
+            padding-right: 0.5cm;
+            padding-bottom: 5px;
+            padding-top: 5px;
+            background-color: cadetblue;
+            border: 1px solid orange;
+        }
+    </style>
+    <script>
+        $('document').ready(function () {
+            $(function () {
+                $("#datum").datepicker({ dateFormat: 'dd-mm-yy' });
+            });
+        });
+    </script>
+</head>
+<body>
+    <div>
+        @using (Html.BeginForm())
+        {
+            <p>Unesite datum svog rodjenja:</p>
+            @Html.TextBoxFor(x => x.Datum, new { @id = "datum" })
+            <button type="submit" class="btn1">Izracunaj</button>
+        }
+    </div>
+    <div class="container">
+        <p class="row">@ViewBag.Error</p>
+        <p class="row">@ViewBag.Uvod</p>
+        <p class="row">@ViewBag.StarostMj</p>
+        <p class="row">@ViewBag.StarostDan</p>
+        <p class="row">@ViewBag.StarostSat</p>
+        <p class="row">@ViewBag.StarostMin</p>
+        <p class="row">@ViewBag.StarostSek</p>
+    </div>
+</body>
+</html>
